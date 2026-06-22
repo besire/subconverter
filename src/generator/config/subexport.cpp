@@ -164,6 +164,7 @@ bool applyMatcher(const std::string &rule, std::string &real_rule, const Proxy &
         {ProxyType::HTTP, "HTTP"},
         {ProxyType::HTTPS, "HTTPS"},
         {ProxyType::SOCKS5, "SOCKS5"},
+        {ProxyType::SSH, "SSH"},
         {ProxyType::WireGuard, "WIREGUARD"},
         {ProxyType::VLESS, "VLESS"},
         {ProxyType::Hysteria, "HYSTERIA"},
@@ -436,6 +437,24 @@ proxyToClash(std::vector<Proxy> &nodes, YAML::Node &yamlnode, const ProxyGroupCo
                 }
                 if (!scv.is_undef())
                     singleproxy["skip-cert-verify"] = scv.get();
+                break;
+            case ProxyType::SSH:
+                singleproxy["type"] = "ssh";
+                if (!x.Username.empty())
+                    singleproxy["username"] = x.Username;
+                if (!x.Password.empty()) {
+                    singleproxy["password"] = x.Password;
+                    if (std::all_of(x.Password.begin(), x.Password.end(), ::isdigit))
+                        singleproxy["password"].SetTag("str");
+                }
+                if (!x.PrivateKey.empty())
+                    singleproxy["private-key"] = x.PrivateKey;
+                if (!x.PrivateKeyPassphrase.empty())
+                    singleproxy["private-key-passphrase"] = x.PrivateKeyPassphrase;
+                if (!x.HostKey.empty())
+                    singleproxy["host-key"] = x.HostKey;
+                if (!x.HostKeyAlgorithms.empty())
+                    singleproxy["host-key-algorithms"] = x.HostKeyAlgorithms;
                 break;
             case ProxyType::HTTP:
             case ProxyType::HTTPS:

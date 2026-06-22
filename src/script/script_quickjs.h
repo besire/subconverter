@@ -137,7 +137,10 @@ namespace qjs
             JS_DefinePropertyValueStr(ctx, obj, "SelfIPv6", JS_NewString(ctx, n.SelfIPv6), JS_PROP_C_W_E);
             JS_DefinePropertyValueStr(ctx, obj, "PublicKey", JS_NewString(ctx, n.PublicKey), JS_PROP_C_W_E);
             JS_DefinePropertyValueStr(ctx, obj, "PrivateKey", JS_NewString(ctx, n.PrivateKey), JS_PROP_C_W_E);
+            JS_DefinePropertyValueStr(ctx, obj, "PrivateKeyPassphrase", JS_NewString(ctx, n.PrivateKeyPassphrase), JS_PROP_C_W_E);
             JS_DefinePropertyValueStr(ctx, obj, "PreSharedKey", JS_NewString(ctx, n.PreSharedKey), JS_PROP_C_W_E);
+            JS_DefinePropertyValueStr(ctx, obj, "HostKey", js_traits<StringArray>::wrap(ctx, n.HostKey), JS_PROP_C_W_E);
+            JS_DefinePropertyValueStr(ctx, obj, "HostKeyAlgorithms", js_traits<StringArray>::wrap(ctx, n.HostKeyAlgorithms), JS_PROP_C_W_E);
             JS_DefinePropertyValueStr(ctx, obj, "DnsServers", js_traits<StringArray>::wrap(ctx, n.DnsServers), JS_PROP_C_W_E);
             JS_DefinePropertyValueStr(ctx, obj, "Mtu", JS_NewUint32(ctx, n.Mtu), JS_PROP_C_W_E);
             JS_DefinePropertyValueStr(ctx, obj, "AllowedIPs", JS_NewString(ctx, n.AllowedIPs), JS_PROP_C_W_E);
@@ -192,7 +195,10 @@ namespace qjs
             node.SelfIPv6 = unwrap_free<std::string>(ctx, v, "SelfIPv6");
             node.PublicKey = unwrap_free<std::string>(ctx, v, "PublicKey");
             node.PrivateKey = unwrap_free<std::string>(ctx, v, "PrivateKey");
+            node.PrivateKeyPassphrase = unwrap_free<std::string>(ctx, v, "PrivateKeyPassphrase");
             node.PreSharedKey = unwrap_free<std::string>(ctx, v, "PreSharedKey");
+            node.HostKey = unwrap_free<StringArray>(ctx, v, "HostKey");
+            node.HostKeyAlgorithms = unwrap_free<StringArray>(ctx, v, "HostKeyAlgorithms");
             node.DnsServers = unwrap_free<StringArray>(ctx, v, "DnsServers");
             node.Mtu = unwrap_free<uint32_t>(ctx, v, "Mtu");
             node.AllowedIPs = unwrap_free<std::string>(ctx, v, "AllowedIPs");

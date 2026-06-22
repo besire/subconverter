@@ -87,6 +87,13 @@ void snellConstruct(Proxy &node, const std::string &group, const std::string &re
                     const std::string &host, uint16_t version = 0, tribool udp = tribool(), tribool tfo = tribool(),
                     tribool scv = tribool(),const std::string& underlying_proxy="");
 
+void sshConstruct(Proxy &node, const std::string &group, const std::string &remarks, const std::string &server,
+                  const std::string &port, const std::string &username, const std::string &password,
+                  const std::string &private_key, const std::string &private_key_passphrase,
+                  const std::vector<std::string> &host_key, const std::vector<std::string> &host_key_algorithms,
+                  tribool udp = tribool(), tribool tfo = tribool(), tribool scv = tribool(),
+                  const std::string &underlying_proxy = "");
+
 void tuicConstruct(Proxy &node, const std::string &group, const std::string &remarks, const std::string &add,
                    const std::string &port, const std::string &password, const std::string &congestion_control,
                    const std::string &alpn,

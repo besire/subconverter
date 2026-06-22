@@ -22,6 +22,7 @@ enum class ProxyType
     HTTP,
     HTTPS,
     SOCKS5,
+    SSH,
     WireGuard,
     VLESS,
     Hysteria,
@@ -49,6 +50,8 @@ inline String getProxyTypeName(ProxyType type) {
             return "HTTPS";
         case ProxyType::SOCKS5:
             return "SOCKS5";
+        case ProxyType::SSH:
+            return "SSH";
         case ProxyType::WireGuard:
             return "WireGuard";
         case ProxyType::VLESS:
@@ -115,7 +118,10 @@ struct Proxy {
     String SelfIPv6;
     String PublicKey;
     String PrivateKey;
+    String PrivateKeyPassphrase;
     String PreSharedKey;
+    StringArray HostKey;
+    StringArray HostKeyAlgorithms;
     StringArray DnsServers;
     uint16_t Mtu = 0;
     String AllowedIPs = "0.0.0.0/0, ::/0";
@@ -156,6 +162,7 @@ struct Proxy {
 #define SSR_DEFAULT_GROUP "SSRProvider"
 #define V2RAY_DEFAULT_GROUP "V2RayProvider"
 #define SOCKS_DEFAULT_GROUP "SocksProvider"
+#define SSH_DEFAULT_GROUP "SSHProvider"
 #define HTTP_DEFAULT_GROUP "HTTPProvider"
 #define TROJAN_DEFAULT_GROUP "TrojanProvider"
 #define SNELL_DEFAULT_GROUP "SnellProvider"

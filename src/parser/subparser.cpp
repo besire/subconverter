@@ -166,6 +166,26 @@ std::string getUrlAlpn(const std::string &addition) {
     return join(getUrlAlpnList(addition), ",");
 }
 
+string_array yamlStringArray(const YAML::Node &node) {
+    string_array result;
+    if (!node.IsDefined() || node.IsNull())
+        return result;
+    if (node.IsSequence()) {
+        for (const auto &item: node) {
+            if (item.IsScalar()) {
+                auto value = safe_as<std::string>(item);
+                if (!value.empty())
+                    result.emplace_back(std::move(value));
+            }
+        }
+    } else if (node.IsScalar()) {
+        auto value = safe_as<std::string>(node);
+        if (!value.empty())
+            result.emplace_back(std::move(value));
+    }
+    return result;
+}
+
 void commonConstruct(Proxy &node, ProxyType type, const std::string &group, const std::string &remarks,
                      const std::string &server, const std::string &port, const tribool &udp, const tribool &tfo,
                      const tribool &scv, const tribool &tls13, const std::string &underlying_proxy) {
@@ -278,6 +298,20 @@ void snellConstruct(Proxy &node, const std::string &group, const std::string &re
     node.OBFS = obfs;
     node.Host = host;
     node.SnellVersion = version;
+}
+
+void sshConstruct(Proxy &node, const std::string &group, const std::string &remarks, const std::string &server,
+                  const std::string &port, const std::string &username, const std::string &password,
+                  const std::string &private_key, const std::string &private_key_passphrase,
+                  const string_array &host_key, const string_array &host_key_algorithms,
+                  tribool udp, tribool tfo, tribool scv, const std::string &underlying_proxy) {
+    commonConstruct(node, ProxyType::SSH, group, remarks, server, port, udp, tfo, scv, tribool(), underlying_proxy);
+    node.Username = username;
+    node.Password = password;
+    node.PrivateKey = private_key;
+    node.PrivateKeyPassphrase = private_key_passphrase;
+    node.HostKey = host_key;
+    node.HostKeyAlgorithms = host_key_algorithms;
 }
 
 void wireguardConstruct(Proxy &node, const std::string &group, const std::string &remarks, const std::string &server,
@@ -1302,13 +1336,14 @@ void explodeClash(Node yamlnode, std::vector<Proxy> &nodes) {
         std::string plugin, pluginopts, pluginopts_mode, pluginopts_host, pluginopts_mux; //ss
         std::string protocol, protoparam, obfs, obfsparam; //ssr
         std::string flow, mode; //trojan
-        std::string user; //socks
+        std::string user; //socks, ssh
         std::string ip, ipv6, private_key, public_key, mtu; //wireguard
+        std::string private_key_passphrase; //ssh
         std::string auth, up, down, obfsParam, insecure, alpn; //hysteria
         std::string obfsPassword; //hysteria2
         std::string congestion_control, udp_relay_mode, token; // tuic
         std::string underlying_proxy;
-        string_array dns_server;
+        string_array dns_server, host_key, host_key_algorithms;
         std::vector<String> alpns;
         String alpn2;
         std::string fingerprint, multiplexing, transfer_protocol, v2ray_http_upgrade;
@@ -1452,6 +1487,19 @@ void explodeClash(Node yamlnode, std::vector<Proxy> &nodes) {
 
                 socksConstruct(node, group, ps, server, port, user, password, tribool(), tribool(), tribool(),
                                underlying_proxy);
+                break;
+            case "ssh"_hash:
+                group = SSH_DEFAULT_GROUP;
+
+                singleproxy["username"] >>= user;
+                singleproxy["password"] >>= password;
+                singleproxy["private-key"] >>= private_key;
+                singleproxy["private-key-passphrase"] >>= private_key_passphrase;
+                host_key = yamlStringArray(singleproxy["host-key"]);
+                host_key_algorithms = yamlStringArray(singleproxy["host-key-algorithms"]);
+
+                sshConstruct(node, group, ps, server, port, user, password, private_key, private_key_passphrase,
+                             host_key, host_key_algorithms, udp, tfo, scv, underlying_proxy);
                 break;
             case "ssr"_hash:
                 group = SSR_DEFAULT_GROUP;
